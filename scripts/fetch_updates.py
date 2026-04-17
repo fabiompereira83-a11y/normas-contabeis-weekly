@@ -15,39 +15,41 @@ base_dir.mkdir(parents=True, exist_ok=True)
 output_file = base_dir / "updates.md"
 
 # ===============================
-# Fonte IFRS
+# Fonte CPC (site público)
 # ===============================
-IFRS_URL = "https://www.ifrs.org/issued-standards/list-of-standards/"
+CPC_URL = "https://www.cpc.org.br/CPC/Pronunciamentos"
 
-def fetch_ifrs_updates():
-    response = requests.get(IFRS_URL, timeout=30)
+def fetch_cpc_updates():
+    response = requests.get(CPC_URL, timeout=30)
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
-
     updates = []
 
-    # OBS: seletor simples e conservador
-    for link in soup.select("a"):
-        title = link.get_text(strip=True)
-        href = link.get("href")
-
-        if not title or not href:
+    # Estrutura atual do site CPC: tabela com links
+    for row in soup.select("table tr"):
+        cols = row.find_all("td")
+        if len(cols) < 2:
             continue
 
-        if "ifrs.org" not in href:
+        title = cols[0].get_text(strip=True)
+        link_tag = cols[0].find("a")
+
+        if not title or not link_tag:
             continue
 
-        # Heurística simples para filtrar ruído
-        keywords = ["IFRS", "IAS", "Amendment", "amendment", "Standard"]
-        if any(k in title for k in keywords):
-            updates.append({
-                "title": title,
-                "url": href
-            })
+        link = link_tag.get("href")
+        if not link.startswith("http"):
+            link = f"https://www.cpc.org.br{link}"
 
-    # limitar para não gerar lixo
-    return updates[:10]
+        updates.append({
+            "title": title,
+            "url": link
+        })
+
+    # limitar para evitar ruído excessivo
+    return updates[:15]
+
 
 # ===============================
 # Escrita do arquivo (SOBRESCREVE)
@@ -55,8 +57,8 @@ def fetch_ifrs_updates():
 with open(output_file, "w", encoding="utf-8") as f:
     f.write(f"# Atualizações Normativas – Ano {year}, Semana {week}\n\n")
 
-    f.write("## IFRS – Issued Standards and Amendments\n\n")
-    f.write(f"Fonte oficial: {IFRS_URL}\n\n")
+    f.write("## CPC – Pronunciamentos Contábeis\n\n")
+    f.write(f"Fonte oficial: {CPC_URL}\n\n")
 
     updates = fetch_ifrs_updates()
 
