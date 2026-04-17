@@ -61,10 +61,10 @@ with open(output_file, "w", encoding="utf-8") as f:
 
     if not updates:
         f.write("_Nenhuma atualização identificada automaticamente nesta semana._\n")
-    else:
-        for u in updates:
-            f.write(f"### {u['title']}\n")
-            f.write(f"- Link: {u['url']}\n\n")
+
+    for u in updates:
+        f.write(f"### {u['title']}\n")
+        f.write(f"- Link: {u['url']}\n\n")
 
     f.write("---\n")
     f.write(
