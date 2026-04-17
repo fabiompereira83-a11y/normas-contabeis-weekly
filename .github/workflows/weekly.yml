@@ -34,6 +34,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add main/
+          git add main/ pdfs/
           git commit -m "Update semanal normas contábeis" || echo "Nada novo"
           git push
