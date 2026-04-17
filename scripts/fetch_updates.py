@@ -17,7 +17,7 @@ output_file = base_dir / "updates.md"
 # ===============================
 # Fonte CPC (site público)
 # ===============================
-CPC_URL = "https://www.cpc.org.br/CPC/Pronunciamentos"
+CPC_URL = "https://www.cpc.org.br/CPC/Documentos-Emitidos/Pronunciamentos"
 
 def fetch_cpc_updates():
     response = requests.get(CPC_URL, timeout=30)
