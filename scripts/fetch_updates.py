@@ -59,16 +59,19 @@ with open(output_file, "w", encoding="utf-8") as f:
 
     updates = fetch_cpc_updates() or []
 
-    if not updates:
-        f.write("_Nenhuma atualização identificada automaticamente nesta semana._\n\n")
-
     for u in updates:
         f.write(f"### {u['title']}\n")
         f.write(f"- Link: {u['url']}\n\n")
 
+    if not updates:
+        f.write(
+            "_⚠️ Não foi possível obter dados do site do CPC nesta execução "
+            "(possível indisponibilidade ou alteração na página)._ \n\n"
+        )
+
     f.write("---\n")
     f.write(
-        "\n➡️ **Próximo passo:** Copie os títulos ou textos relevantes acima "
+        "\n➡️ **Próximo passo:** Copie o texto do pronunciamento acima "
         "e cole no ChatGPT usando o prompt técnico padrão para gerar o resumo contábil.\n"
     )
 
