@@ -47,9 +47,6 @@ def fetch_cpc_updates():
             "url": link
         })
 
-    # limitar para evitar ruído excessivo
-    return updates[:15]
-
 
 # ===============================
 # Escrita do arquivo (SOBRESCREVE)
