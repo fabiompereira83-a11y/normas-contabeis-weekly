@@ -60,7 +60,7 @@ with open(output_file, "w", encoding="utf-8") as f:
     f.write("## CPC – Pronunciamentos Contábeis\n\n")
     f.write(f"Fonte oficial: {CPC_URL}\n\n")
 
-    updates = fetch_ifrs_updates()
+    updates = fetch_cpc_updates()
 
     if not updates:
         f.write("_Nenhuma atualização identificada automaticamente nesta semana._\n")
