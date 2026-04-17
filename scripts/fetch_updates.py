@@ -97,29 +97,29 @@ with open(output_file, "w", encoding="utf-8") as f:
     updates = fetch_cpc_updates() or []
 
     for u in updates:
-    f.write(f"### {u['title']}\n")
-    f.write(f"- Página oficial: {u['url']}\n")
+        f.write(f"### {u['title']}\n")
+        f.write(f"- Página oficial: {u['url']}\n")
 
-    details = fetch_cpc_detail(u["url"])
+        details = fetch_cpc_detail(u["url"])
 
-    if details["summary"]:
-        f.write(f"- Resumo introdutório:\n\n  {details['summary']}\n\n")
+        if details["summary"]:
+            f.write(f"- Resumo introdutório:\n\n  {details['summary']}\n\n")
 
-    if details["pdf"]:
-        f.write(f"- PDF: {details['pdf']}\n\n")
+        if details["pdf"]:
+            f.write(f"- PDF: {details['pdf']}\n\n")
 
-    f.write("\n")
+        f.write("\n")
 
-    if not updates:
+        if not updates:
+            f.write(
+                "_⚠️ Não foi possível obter dados do site do CPC nesta execução "
+                "(possível indisponibilidade ou alteração na página)._ \n\n"
+            )
+
+        f.write("---\n")
         f.write(
-            "_⚠️ Não foi possível obter dados do site do CPC nesta execução "
-            "(possível indisponibilidade ou alteração na página)._ \n\n"
+            "\n➡️ **Próximo passo:** Copie o texto do pronunciamento acima "
+            "e cole no ChatGPT usando o prompt técnico padrão para gerar o resumo contábil.\n"
         )
-
-    f.write("---\n")
-    f.write(
-        "\n➡️ **Próximo passo:** Copie o texto do pronunciamento acima "
-        "e cole no ChatGPT usando o prompt técnico padrão para gerar o resumo contábil.\n"
-    )
 
 print(f"Arquivo sobrescrito com sucesso: {output_file}")
