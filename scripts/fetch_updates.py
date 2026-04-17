@@ -2,7 +2,15 @@ import requests
 from datetime import datetime
 from pathlib import Path
 
-OUTPUT = Path("updates_weekly.md")
+# Data atual em padrão ISO
+today = datetime.utcnow()
+year, week, _ = today.isocalendar()
+
+# Estrutura de pastas: main/year/week_xx
+base_dir = Path("main") / str(year) / f"week_{week:02d}"
+base_dir.mkdir(parents=True, exist_ok=True)
+
+OUTPUT = base_dir / "updates_weekly.md"
 
 sources = [
     {
