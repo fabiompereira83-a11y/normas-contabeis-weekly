@@ -3,6 +3,16 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from pathlib import Path
 
+import hashlib
+
+def calculate_hash(content: bytes) -> str:
+    return hashlib.sha256(content).hexdigest()
+
+
+def file_hash(path: Path) -> str:
+    with open(path, "rb") as f:
+        return calculate_hash(f.read())
+
 # ===============================
 # Data ISO (ano / semana)
 # ===============================
@@ -11,6 +21,9 @@ year, week, _ = today.isocalendar()
 
 base_dir = Path("main") / str(year) / f"week_{week:02d}"
 base_dir.mkdir(parents=True, exist_ok=True)
+
+pdf_base_dir = Path("pdfs") / str(year) / f"week_{week:02d}"
+pdf_base_dir.mkdir(parents=True, exist_ok=True)
 
 output_file = base_dir / "updates.md"
 
@@ -89,6 +102,37 @@ def fetch_cpc_detail(url):
             "pdfs": []
         }
 
+def save_pdf_if_new(pdf_url: str, target_dir: Path):
+    try:
+        response = requests.get(pdf_url, timeout=60)
+        response.raise_for_status()
+
+        content = response.content
+        new_hash = calculate_hash(content)
+
+        # verificar PDFs já existentes
+        for existing_pdf in target_dir.glob("*.pdf"):
+            if file_hash(existing_pdf) == new_hash:
+                # PDF já existe, não salvar novamente
+                return None
+
+        # nome do arquivo (último segmento da URL)
+        filename = pdf_url.split("/")[-1]
+        file_path = target_dir / filename
+
+        # se nome existir mas conteúdo for diferente, versiona
+        if file_path.exists():
+            file_path = target_dir / f"{file_path.stem}_{new_hash[:8]}.pdf"
+
+        with open(file_path, "wb") as f:
+            f.write(content)
+
+        return file_path
+
+    except Exception:
+        return None
+  
+
 
 # ===============================
 # Escrita do arquivo (SOBRESCREVE)
@@ -106,6 +150,12 @@ with open(output_file, "w", encoding="utf-8") as f:
         f.write(f"- Página oficial: {u['url']}\n")
 
         details = fetch_cpc_detail(u["url"])
+        saved_pdfs = []
+
+        for pdf_url in details["pdfs"]:
+            saved = save_pdf_if_new(pdf_url, pdf_base_dir)
+            if saved:
+                saved_pdfs.append(saved.name)
 
         if details["summary"]:
             f.write(f"- Resumo introdutório:\n\n  {details['summary']}\n\n")
