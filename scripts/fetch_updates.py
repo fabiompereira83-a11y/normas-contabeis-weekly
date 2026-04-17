@@ -57,10 +57,10 @@ with open(output_file, "w", encoding="utf-8") as f:
     f.write("## CPC – Pronunciamentos Contábeis\n\n")
     f.write(f"Fonte oficial: {CPC_URL}\n\n")
 
-    updates = fetch_cpc_updates()
+    updates = fetch_cpc_updates() or []
 
     if not updates:
-        f.write("_Nenhuma atualização identificada automaticamente nesta semana._\n")
+        f.write("_Nenhuma atualização identificada automaticamente nesta semana._\n\n")
 
     for u in updates:
         f.write(f"### {u['title']}\n")
