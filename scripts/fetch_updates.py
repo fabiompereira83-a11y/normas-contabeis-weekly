@@ -49,6 +49,42 @@ def fetch_cpc_updates():
 # limitar para evitar ruído excessivo
     return updates
 
+def fetch_cpc_detail(url):
+    try:
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Tentativa de pegar um texto introdutório
+        content_div = soup.find("div", class_="conteudo")
+        summary = ""
+
+        if content_div:
+            paragraphs = content_div.find_all("p")
+            if paragraphs:
+                summary = paragraphs[0].get_text(strip=True)
+
+        # Tentativa de achar PDF
+        pdf_link = None
+        for a in soup.find_all("a", href=True):
+            if a["href"].lower().endswith(".pdf"):
+                pdf_link = a["href"]
+                if not pdf_link.startswith("http"):
+                    pdf_link = f"https://www.cpc.org.br{pdf_link}"
+                break
+
+        return {
+            "summary": summary,
+            "pdf": pdf_link
+        }
+
+    except Exception as e:
+        return {
+            "summary": "",
+            "pdf": None
+        }
+
+
 # ===============================
 # Escrita do arquivo (SOBRESCREVE)
 # ===============================
@@ -61,8 +97,18 @@ with open(output_file, "w", encoding="utf-8") as f:
     updates = fetch_cpc_updates() or []
 
     for u in updates:
-        f.write(f"### {u['title']}\n")
-        f.write(f"- Link: {u['url']}\n\n")
+    f.write(f"### {u['title']}\n")
+    f.write(f"- Página oficial: {u['url']}\n")
+
+    details = fetch_cpc_detail(u["url"])
+
+    if details["summary"]:
+        f.write(f"- Resumo introdutório:\n\n  {details['summary']}\n\n")
+
+    if details["pdf"]:
+        f.write(f"- PDF: {details['pdf']}\n\n")
+
+    f.write("\n")
 
     if not updates:
         f.write(
