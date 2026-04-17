@@ -4,8 +4,8 @@
 
 Fonte oficial: https://www.cpc.org.br/CPC/Documentos-Emitidos/Pronunciamentos
 
-_Nenhuma atualização identificada automaticamente nesta semana._
+_⚠️ Não foi possível obter dados do site do CPC nesta execução (possível indisponibilidade ou alteração na página)._ 
 
 ---
 
-➡️ **Próximo passo:** Copie os títulos ou textos relevantes acima e cole no ChatGPT usando o prompt técnico padrão para gerar o resumo contábil.
+➡️ **Próximo passo:** Copie o texto do pronunciamento acima e cole no ChatGPT usando o prompt técnico padrão para gerar o resumo contábil.
