@@ -55,7 +55,7 @@ def fetch_cpc_detail(url):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Tentativa de pegar um texto introdutório
+        # Texto introdutório (opcional)
         content_div = soup.find("div", class_="conteudo")
         summary = ""
 
@@ -64,24 +64,29 @@ def fetch_cpc_detail(url):
             if paragraphs:
                 summary = paragraphs[0].get_text(strip=True)
 
-        # Tentativa de achar PDF
-        pdf_link = None
+        # TODOS os PDFs da página
+        pdf_links = []
+
         for a in soup.find_all("a", href=True):
-            if a["href"].lower().endswith(".pdf"):
-                pdf_link = a["href"]
-                if not pdf_link.startswith("http"):
-                    pdf_link = f"https://www.cpc.org.br{pdf_link}"
-                break
+            href = a["href"]
+
+            if not href.lower().endswith(".pdf"):
+                continue
+
+            if not href.startswith("http"):
+                href = f"https://www.cpc.org.br{href}"
+
+            pdf_links.append(href)
 
         return {
             "summary": summary,
-            "pdf": pdf_link
+            "pdfs": pdf_links
         }
 
-    except Exception as e:
+    except Exception:
         return {
             "summary": "",
-            "pdf": None
+            "pdfs": []
         }
 
 
@@ -105,10 +110,12 @@ with open(output_file, "w", encoding="utf-8") as f:
         if details["summary"]:
             f.write(f"- Resumo introdutório:\n\n  {details['summary']}\n\n")
 
-        if details["pdf"]:
-            f.write(f"- PDF: {details['pdf']}\n\n")
+        if details["pdfs"]:
+            f.write("- PDFs encontrados:\n")
+            for pdf in details["pdfs"]:
+                f.write(f"  - {pdf}\n")
+            f.write("\n")
 
-        f.write("\n")
 
         if not updates:
             f.write(
