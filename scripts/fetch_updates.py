@@ -30,7 +30,7 @@ sources = [
 today = datetime.utcnow().strftime("%Y-%m-%d")
 
 with open(OUTPUT, "w", encoding="utf-8") as f:
-    f.write(f"# Atualizações Normativas – Semana {today}\n\n")
+    f.write(f"# Atualizações Normativas – Dia {today}\n\n")
     f.write("Fontes monitoradas (links oficiais):\n\n")
 
     for s in sources:
